@@ -61,6 +61,9 @@
 #elif defined(__AVR_ATmega8P__) || defined(__AVR_ATmega8__)
   #define IR_USE_TIMER1   // tx = pin 9
 
+#elif defined(__AVR_ATtiny85__) 
+  #define IR_USE_TIMER1   // tx = ? 
+
 // Arduino Duemilanove, Diecimila, LilyPad, Mini, Fio, etc
 #else
   //#define IR_USE_TIMER1   // tx = pin 9
