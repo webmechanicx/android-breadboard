@@ -1,0 +1,6 @@
+ADKAccessory	KEYWORD1
+
+powerOn		KEYWORD2
+isConnected	KEYWORD2
+read		KEYWORD2
+write		KEYWORD2
