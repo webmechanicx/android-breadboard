@@ -31,11 +31,8 @@
 
 #include "Arduino.h"
 #include "pins_arduino.h"
-
-#include "AndroidAccessory.h"
+#include "ADKAccessory.h"
 #include "CommandPacket.h"
-
-extern AndroidAccessory acc;
 
 #define COMMAND_BASE            (0x00)  
 
@@ -72,8 +69,8 @@ extern AndroidAccessory acc;
 #define REPLY_OK          (REPLY_BASE)
 #define REPLY_NOK         (REPLY_BASE+1)
 
-extern void ProcessInput(byte *msg, int len);
-extern void ProcessUserCommand(CommandPacket& pktRead, AndroidAccessory &acc, int shield_id); 
+extern void ProcessInput(ADKAccessory &acc, byte *msg, int len);
+extern void ProcessUserCommand(CommandPacket& pktRead, ADKAccessory &acc, int shield_id); 
 
 /*
 class a {

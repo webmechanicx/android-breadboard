@@ -29,10 +29,7 @@
 
 #include "Arduino.h"
 #include "pins_arduino.h"
-
-#include <Max3421e.h>
-#include <Usb.h>
-#include <AndroidAccessory.h> // for acc access
+#include "ADKAccessory.h" // for acc access
 #include "CommandPacket.h"
 
 CommandPacket::CommandPacket(byte *pInMsg, int length) 
@@ -61,7 +58,7 @@ int CommandPacket::readInt()
 	    DebugPrintln("CommandPacket:Error in readInt, trying to read beyond limit");
 	    return -1;
     }
-    temp = (msg[index] << 24) + (msg[index+1] << 16) + (msg[index+2] << 8) + (msg[index+3]); 
+    temp = (msg[index] << 24) + (msg[index+1] << 16) + (msg[index+2] << 8) + msg[index+3]; 
     index += 4;
     return temp;
 }
@@ -92,31 +89,40 @@ int CommandPacket::writeInt(int i)
   }
 }
 
-void CommandPacket::Flush(AndroidAccessory &acc)
+bool CommandPacket::isAvailable()
+{
+    if(index >= len) return false; // not available 
+    else return true;
+
+}
+
+void CommandPacket::Flush(ADKAccessory &acc)
 {
 	int i;
+
 	Serial.println("In Flush len= ");
 	Serial.println(index);
+
 	for(i = 0; i < index; i++) {
 		Serial.print("msg[");
 		Serial.print(i);
 		Serial.print("]=");
 		Serial.println(msg[i]);
 	}
-   i = acc.write(msg, index);
-   Serial.print(i);
-   Serial.println("bytes sent");
-   index = 0;
+
+   	i = acc.write(msg, index);
+   	Serial.print(i);
+   	Serial.println("bytes sent");
+   	index = 0;
 };
 
-void SendReplyInt(AndroidAccessory &acc, int shield_id, int ret, int value)
+void SendReplyInt(ADKAccessory &acc, int shield_id, int ret, int value)
 {
-  byte msg[MAX_LEN];
-  CommandPacket pktWrite(msg, MAX_LEN);
+  byte msg[32];
+  CommandPacket pktWrite(msg, 32);
 
   pktWrite.writeInt(shield_id);
   pktWrite.writeByte((byte)ret);
   pktWrite.writeInt(value);
   pktWrite.Flush(acc);
-//  Serial.println("reply sent");
 }

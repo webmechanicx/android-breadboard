@@ -33,7 +33,7 @@
 extern float measure_distance(int trigPin, int echoPin);
 extern float microsecondsToCentimeters(long microseconds);
 
-void ProcessUserCommand(CommandPacket &pktRead, AndroidAccessory &acc, int shield_id)
+void ProcessUserCommand(CommandPacket &pktRead, ADKAccessory &acc, int shield_id)
 {
     int sensor;
     

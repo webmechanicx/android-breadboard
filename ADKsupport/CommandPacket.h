@@ -32,9 +32,7 @@
 
 #include "Arduino.h"
 #include "pins_arduino.h"
-#include "AndroidAccessory.h"
-
-#define MAX_LEN 256 
+#include "ADKAccessory.h"
 
 //#define __DEBUG
 
@@ -54,14 +52,14 @@ private:
 
 public:
     CommandPacket(byte *inMsg, int length);
-	
+    bool isAvailable();	
     byte readByte(); 
     int readInt();
     byte writeByte(byte b);
     int writeInt(int i);
-    void Flush(AndroidAccessory &acc);
+    void Flush(ADKAccessory &acc);
 };
 
-extern void SendReplyInt(AndroidAccessory &acc, int shield_id, int ret, int value);
+extern void SendReplyInt(ADKAccessory &acc, int shield_id, int ret, int value);
 
 #endif /* __CommandPacket_h__ */
