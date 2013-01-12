@@ -32,6 +32,7 @@
 #include "ADKAccessory.h" // for acc access
 #include "CommandPacket.h"
 
+
 CommandPacket::CommandPacket(byte *pInMsg, int length) 
 {  // for reading
 	msg = pInMsg;
@@ -63,6 +64,31 @@ int CommandPacket::readInt()
     return temp;
 }
 
+long CommandPacket::readLong()
+{ 
+	long d;
+	int high, low;
+
+    if(index + 7 >= len) {
+	    DebugPrintln("CommandPacket:Error in readInt, trying to read beyond limit");
+	    return -1;
+    }
+
+
+    // low int comes first
+    low = (msg[index] << 24) + (msg[index+1] << 16) + (msg[index+2] << 8) + msg[index+3]; 
+    high = (msg[index+4] << 24) + (msg[index+5] << 16) + (msg[index+6] << 8) + msg[index+7]; 
+    Serial.println("CommandPacket:Read Long low");
+    Serial.println(low);
+    Serial.println("CommandPacket:Read Long high");
+    Serial.println(high);
+    d = low + (high << 32); 
+    Serial.println("CommandPacket:d=");
+    Serial.println(d);
+    index += 8;
+    return d;
+}
+
 byte CommandPacket::writeByte(byte b)
 { 
     if(index < len) {
@@ -83,6 +109,30 @@ int CommandPacket::writeInt(int i)
      	msg[index+3] = (byte) i;
      	index += 4;     
      	return i;
+  } else {
+	DebugPrintln("CommandPacket:Error in writeByte, buffer limit exceeded");
+     	return -1;
+  }
+}
+
+int CommandPacket::writeLong(long l)
+{
+	int high, low;
+	low = (int)(l & 0xFFFFFFFF);
+	high = (int)((l >> 32) & 0xFFFFFFFF);
+
+  if(index + 7 < len) {
+  	msg[index] = (byte) (low >> 24);
+     	msg[index+1] = (byte) (low >> 16);
+     	msg[index+2] = (byte) (low >> 8);
+     	msg[index+3] = (byte) low;
+
+  	msg[index+4] = (byte) (high >> 24);
+     	msg[index+5] = (byte) (high >> 16);
+     	msg[index+6] = (byte) (high >> 8);
+     	msg[index+7] = (byte) high;
+     	index += 8;     
+     	return 8; // 8 bytes written
   } else {
 	DebugPrintln("CommandPacket:Error in writeByte, buffer limit exceeded");
      	return -1;
@@ -124,5 +174,16 @@ void SendReplyInt(ADKAccessory &acc, int shield_id, int ret, int value)
   pktWrite.writeInt(shield_id);
   pktWrite.writeByte((byte)ret);
   pktWrite.writeInt(value);
+  pktWrite.Flush(acc);
+}
+
+void SendReplyLong(ADKAccessory &acc, int shield_id, int ret, long value)
+{
+  byte msg[64];
+  CommandPacket pktWrite(msg, 64);
+
+  pktWrite.writeInt(shield_id);
+  pktWrite.writeByte((byte)ret);
+  pktWrite.writeLong(value);
   pktWrite.Flush(acc);
 }

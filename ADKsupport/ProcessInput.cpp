@@ -39,6 +39,7 @@ void ProcessInput(ADKAccessory &acc, byte *inMsg, int len)
   int pin, mode, value;
   int shield_id;
   int command;
+  long d;
 
   CommandPacket pktRead(inMsg, len);
 
@@ -78,6 +79,7 @@ void ProcessInput(ADKAccessory &acc, byte *inMsg, int len)
       DebugPrintln(" value = ");
       DebugPrintln(value);
       break;
+
   case COMMAND_ANALOG_READ:
        pin = pktRead.readByte();
        value = analogRead(pin);
@@ -87,12 +89,13 @@ void ProcessInput(ADKAccessory &acc, byte *inMsg, int len)
        DebugPrintln(pin);
        DebugPrintln(" value = ");
        DebugPrintln(value);
+       // 0~1023
        SendReplyInt(acc, shield_id, REPLY_OK, value);
        break;
 
   case COMMAND_ANALOG_WRITE:
        pin = pktRead.readByte();
-       value = pktRead.readInt();
+       value = pktRead.readByte(); // 0~255
        DebugPrintln("ProcessInput: AnalogWrite ");
        DebugPrintln("pin = ");
        DebugPrintln(pin);
@@ -102,11 +105,31 @@ void ProcessInput(ADKAccessory &acc, byte *inMsg, int len)
        break;
 
   case COMMAND_DELAY:
-       value = pktRead.readByte();
+       d = pktRead.readLong();
        DebugPrintln("ProcessInput: Delay ");
        DebugPrintln(" value = ");
+       DebugPrintln(d); 
+       delay(d);
+       break;
+
+  case COMMAND_DELAYMICROS:
+       value = pktRead.readInt();
+       DebugPrintln("ProcessInput: DelayMicroseconds ");
+       DebugPrintln(" value = ");
        DebugPrintln(value); 
-       delay(value);
+       delayMicroseconds(value);
+       break;
+
+  case COMMAND_MILLIS:
+       DebugPrintln("ProcessInput: Millis ");
+       d = millis();
+       SendReplyLong(acc, shield_id, REPLY_OK, d);
+       break;
+
+  case COMMAND_MICROS:
+       DebugPrintln("ProcessInput: Micros ");
+       d = micros();
+       SendReplyLong(acc, shield_id, REPLY_OK, d);
        break;
 
   case COMMAND_USER:

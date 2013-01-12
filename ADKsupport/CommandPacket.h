@@ -55,11 +55,14 @@ public:
     bool isAvailable();	
     byte readByte(); 
     int readInt();
+    long readLong();
     byte writeByte(byte b);
     int writeInt(int i);
+    int writeLong(long l);
     void Flush(ADKAccessory &acc);
 };
 
 extern void SendReplyInt(ADKAccessory &acc, int shield_id, int ret, int value);
+extern void SendReplyLong(ADKAccessory &acc, int shield_id, int ret, long d);
 
 #endif /* __CommandPacket_h__ */

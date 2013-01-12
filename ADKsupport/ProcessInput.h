@@ -35,6 +35,7 @@
 #include "CommandPacket.h"
 
 #define COMMAND_BASE            (0x00)  
+#define COMMAND_SYSTEM            COMMAND_BASE  
 
 // from 0x00~0x20 
 // most popular command
@@ -44,6 +45,9 @@
 #define COMMAND_ANALOG_READ    (COMMAND_BASE+0x04)
 #define COMMAND_ANALOG_WRITE    (COMMAND_BASE+0x05)
 #define COMMAND_DELAY           (COMMAND_BASE+0x06)
+#define COMMAND_DELAYMICROS     (COMMAND_BASE+0x07)
+#define COMMAND_MILLIS           (COMMAND_BASE+0x08)
+#define COMMAND_MICROS           (COMMAND_BASE+0x09)
 
 #define COMMAND_USER            (COMMAND_BASE+0xff)
 
