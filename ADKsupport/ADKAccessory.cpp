@@ -28,7 +28,6 @@
  */
 
 #include "Arduino.h"
-#include "pins_arduino.h"
 #include <Max3421e.h>
 #include <Usb.h>
 #include <ADKAccessory.h>
@@ -43,6 +42,8 @@ int acc_type;
 AndroidAccessory *pAcc;
 SoftwareSerial *pBTAcc;
 		
+#define DebugPrintln(a) Serial.println(a)
+
 // usb type accessory
 ADKAccessory::ADKAccessory()
 {
@@ -53,7 +54,7 @@ ADKAccessory::ADKAccessory(const char *manufacturer, const char *model, const ch
 {
 	pAcc = new AndroidAccessory(manufacturer, model, description, version, uri, serial);
 	if(!pAcc) 
-		Serial.println("error in usb accessory");
+		DebugPrintln("error in usb accessory");
 	acc_type = USB_TYPE;
 }
 
@@ -61,7 +62,7 @@ ADKAccessory::ADKAccessory(int pinRX, int pinTX, int baud)
 {
 	pBTAcc = new SoftwareSerial(pinRX, pinTX);
 	if(!pBTAcc) 
-		Serial.println("error in SoftwareSerial");
+		DebugPrintln("error in SoftwareSerial");
 	baudrate = baud;
 	acc_type = BT_TYPE;
 }
@@ -116,8 +117,8 @@ int ADKAccessory::read(byte *msg, int bufLen)
 	} else if(acc_type == BT_TYPE) {
 		// BT case, data is delivered together and splitted
 		len = pBTAcc->read();
-		Serial.print("length=");
-		Serial.println(len);
+		DebugPrintln("length=");
+		DebugPrintln(len);
 		if(len < 1) return -1;
 		int i, c;
 		i = 0;
@@ -156,7 +157,7 @@ int ADKAccessory::write(byte *msg, int len)
 			res = pBTAcc->write(msg[i]);
 			
 			if(res == 0) {
-				Serial.println("write failed in ADKAcessory::write");
+				DebugPrintln("write failed in ADKAcessory::write");
 				return -1;
 			}
 		}	

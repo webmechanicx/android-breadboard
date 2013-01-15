@@ -30,7 +30,6 @@
 #define __ProcessInput_h__
 
 #include "Arduino.h"
-#include "pins_arduino.h"
 #include "ADKAccessory.h"
 #include "CommandPacket.h"
 

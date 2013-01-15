@@ -28,7 +28,6 @@
  */
 
 #include "Arduino.h"
-#include "pins_arduino.h"
 #include "ADKAccessory.h" // for acc access
 #include "CommandPacket.h"
 

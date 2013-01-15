@@ -31,7 +31,6 @@
 #define __CommandPacket_h__
 
 #include "Arduino.h"
-#include "pins_arduino.h"
 #include "ADKAccessory.h"
 
 //#define __DEBUG

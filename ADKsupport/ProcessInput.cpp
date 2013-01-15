@@ -27,12 +27,7 @@
  * SUCH DAMAGE.
  */
 
-#include <Max3421e.h>
-#include <Usb.h>
 #include <ProcessInput.h>
-
-#undef DebugPrintln
-#define DebugPrintln(a) Serial.println(a)
 
 void ProcessInput(ADKAccessory &acc, byte *inMsg, int len)
 {

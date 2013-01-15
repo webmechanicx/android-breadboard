@@ -26,8 +26,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#include <Max3421e.h>
-#include <Usb.h>
 #include <ProcessInput.h>
 
 extern float measure_distance(int trigPin, int echoPin);
