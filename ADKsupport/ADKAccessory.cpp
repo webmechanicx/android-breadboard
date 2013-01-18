@@ -27,19 +27,35 @@
  * SUCH DAMAGE.
  */
 
+#ifdef USB_ACC
+#undef USB_ACC
+#endif
+
+// flag setting for usb type
+// turn off USB accessory type if not necessory
+// BT type is default included
+//#define  USB_ACC
+
 #include "Arduino.h"
+
+#ifdef USB_ACC
 #include <Max3421e.h>
 #include <Usb.h>
-#include <ADKAccessory.h>
 #include <AndroidAccessory.h>
+#endif
+
+#include <ADKAccessory.h>
 #include <SoftwareSerial.h>
 
 
-#define USB_TYPE	1
-#define BT_TYPE		2
-
 int acc_type;
+
+#ifdef USB_ACC
 AndroidAccessory *pAcc;
+#define USB_TYPE   1
+#endif
+#define BT_TYPE    2
+
 SoftwareSerial *pBTAcc;
 		
 #define DebugPrintln(a) Serial.println(a)
@@ -50,6 +66,7 @@ ADKAccessory::ADKAccessory()
 	acc_type = -1;
 }
 
+#ifdef USB_ACC
 ADKAccessory::ADKAccessory(const char *manufacturer, const char *model, const char *description, const char *version, const char *uri, const char *serial)
 {
 	pAcc = new AndroidAccessory(manufacturer, model, description, version, uri, serial);
@@ -57,6 +74,7 @@ ADKAccessory::ADKAccessory(const char *manufacturer, const char *model, const ch
 		DebugPrintln("error in usb accessory");
 	acc_type = USB_TYPE;
 }
+#endif
 
 ADKAccessory::ADKAccessory(int pinRX, int pinTX, int baud)
 {
@@ -69,10 +87,13 @@ ADKAccessory::ADKAccessory(int pinRX, int pinTX, int baud)
 
 ADKAccessory::~ADKAccessory()
 {
+#ifdef  USB_ACC
 	if(acc_type == USB_TYPE && pAcc) {
 		delete pAcc;
 		pAcc = NULL;
-	} else if(acc_type == BT_TYPE && pBTAcc) {
+	} else 
+#endif
+	if(acc_type == BT_TYPE && pBTAcc) {
 		delete pBTAcc;
 		pBTAcc = NULL;
 	}
@@ -80,8 +101,11 @@ ADKAccessory::~ADKAccessory()
 
 void ADKAccessory::powerOn()
 {
+#ifdef  USB_ACC
 	if(acc_type == USB_TYPE) pAcc->powerOn();
-	else if(acc_type == BT_TYPE) {
+	else 
+#endif
+	if(acc_type == BT_TYPE) {
 		// use 19200
 		// 9600 did not work 
 		pBTAcc->begin(baudrate);
@@ -91,9 +115,12 @@ void ADKAccessory::powerOn()
 
 bool ADKAccessory::available()
 {
+#ifdef  USB_ACC
 	if(acc_type == USB_TYPE)
 		return pAcc->isConnected();
-	else if(acc_type == BT_TYPE) {
+	else 
+#endif
+	if(acc_type == BT_TYPE) {
 		return pBTAcc->available();
 	}
 	return false;
@@ -103,6 +130,7 @@ int ADKAccessory::read(byte *msg, int bufLen)
 {
 	int len;
 	// read length first
+#ifdef  USB_ACC
 	if(acc_type == USB_TYPE) {
 		// read at once for usb case
 		byte temp[256];
@@ -114,7 +142,9 @@ int ADKAccessory::read(byte *msg, int bufLen)
 			return temp[0];
 		}
 
-	} else if(acc_type == BT_TYPE) {
+	} else 
+#endif
+		if(acc_type == BT_TYPE) {
 		// BT case, data is delivered together and splitted
 		len = pBTAcc->read();
 		DebugPrintln("length=");
@@ -140,6 +170,7 @@ int ADKAccessory::write(byte *msg, int len)
 	int res;
 	byte temp[256+1];
 
+#ifdef  USB_ACC
 	if(acc_type == USB_TYPE) {
 		// write length of data first
 		temp[0] = len;
@@ -150,7 +181,9 @@ int ADKAccessory::write(byte *msg, int len)
 		pAcc->write(temp, len + 1);			
 		// now send the data itself
 		return pAcc->write(msg, len);			
-	} else if(acc_type == BT_TYPE)	{
+	} else 
+#endif
+		if(acc_type == BT_TYPE)	{
 		int i;
 		pBTAcc->write(len);
 		for(i = 0; i < len; i++) {
